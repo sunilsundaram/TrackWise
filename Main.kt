@@ -42,7 +42,7 @@ class SLUP constructor(choice: String) {
             if (activePass == hashMap[stringInput]) {
                 println("Welcome $stringInput")
                 sessionId = stringInput
-                //this.profilePage(sessionId)
+                this.profilePage(sessionId)
             } else {
                 println(" your password was incorrect, Please enter your details again")
                 this.logIn()
@@ -273,6 +273,132 @@ class SLUP constructor(choice: String) {
         }
 
     }
+    fun expenseLimit(sessionId:String) {
+        if (expenseMap.containsKey(sessionId)) {
+            var temp = expenseMap[sessionId]
+            var ex: HashMap<String, Float> = HashMap<String, Float>()
+            var exx = expenseMap[sessionId]
+            println("------------------------------------------------------------------")
+            println("--                                                              --")
+            println("--    $sessionId's Profile                                        ")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--  Enter your monthly budget limit you wish to spend below:    --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("------------------------------------------------------------------")
+            val reader = Scanner(System.`in`)
+            val limit: Float = reader.nextFloat()
+            var tot: Float? = temp?.get("total")
+            var bal: Float? = temp?.get("balance")
+            if (bal != null) {
+                bal = limit - tot!!
+                if(bal < 0){
+                    println("-------------------------------------------------------------------")
+                    println("The budget limit you entered is too less to meet your expenses")
+                    println(" Please enter a budget value more than your latest expenses or increase limit")
+                    println("-------------------------------------------------------------------")
+                    this.expenseLimit(sessionId)
+                }else{
+                    if (temp != null) {
+                        temp.put("balance", bal)
+                    }
+                    if (temp != null) {
+                        temp.put("goal",limit)
+                    }
+                    this.profilePage(sessionId)
+                }
+            }
+        } else {
+            var expenseName: HashMap<String, Float> = HashMap<String, Float>()
+            println("------------------------------------------------------------------")
+            println("--                                                              --")
+            println("--    $sessionId's Profile                                        ")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--  Enter your monthly budget limit you wish to spend below:    --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("------------------------------------------------------------------")
+            val reader = Scanner(System.`in`)
+            val limit: Float = reader.nextFloat()
+            val put = expenseName?.put("goal", limit)
+            val put1 = expenseName?.put("balance", limit)
+            val put2 = expenseName?.put("total", 0F)
+            expenseMap[sessionId] = expenseName
+            this.profilePage(sessionId)
+        }
+    }
+    fun addExpense(sessionId:String){
+        var expenseName: HashMap<String, Float> = HashMap<String, Float>()
+        val key = sessionId
+        if(expenseMap.containsKey(key)){
+            var expenseName = expenseMap[key]
+            println("------------------------------------------------------------------")
+            println("--  $sessionId,'s Profile                                       --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--       Enter the name of your expense:                        --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("------------------------------------------------------------------")
+            val prodName = readln()
+            val reader = Scanner(System.`in`)
+            println("------------------------------------------------------------------")
+            println("--  $sessionId,'s Profile                                       --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--       Enter the amount spent for $prodName:                  --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("--                                                              --")
+            println("------------------------------------------------------------------")
+            var prodPrice: Float = reader.nextFloat()
+            var tot: Float? = expenseName?.get("total")
+            var bal: Float? = expenseName?.get("balance")
+            var bud = expenseName?.get("budget")
+            if (bal != null) {
+                bal = bal - prodPrice
+                if(bal <= 0){
+                    println("-------------------------------------------------------------")
+                    println("    You have exceeded your monthly budget")
+                    println("Please increase your limit or delete any expired expense")
+                    println("-------------------------------------------------------------")
+                    this.profilePage(sessionId)
+                }else{
+                    expenseName?.set(prodName, prodPrice)
+                    if (expenseName != null) {
+                        expenseName.put("balance", bal)
+                        if (tot != null) {
+                            tot = tot + prodPrice
+                            expenseName.put("total", tot)
+                        }
+                    }
+                    this.expensePage(sessionId,0)
+                }
+            }
+        }else{
+            println("------------------------------------------------------------------------")
+            println("--   You do not have any expenses added to your profile               --")
+            println("--   Before you add an expense, you first need to set a budget        --")
+            println("------------------------------------------------------------------------")
+            this.expenseLimit(sessionId)
+        }
+
+    }
 
     fun profilePage(sessionId: String) {
         println("------------------------------------------------------------------")
@@ -282,12 +408,12 @@ class SLUP constructor(choice: String) {
         println("--                                                              --")
         println("--                 Welcome, $sessionId                            ")
         println("--  Choose your favoured option from below:                     --")
-        println("--         1  -   check your balance available for the month    --")
+        println("--         1  -   To check your balance available for the month --")
         println("--         2  -   To set expense limit                          --")
         println("--         3  -   To record a recent expense                    --")
         println("--         4  -   To check Total expenditure                    --")
         println("--         5  -   To delete an expense                          --")
-        println("--         6  -   To delete you profile                         --")
+        println("--         6  -   To delete your profile                        --")
         println("--         7  -   To Logout                                     --")
         println("--                                                              --")
         println("--                                                              --")
@@ -297,16 +423,16 @@ class SLUP constructor(choice: String) {
         var pointer = readln()
         if(pointer == "1"){
             this.expensePage(sessionId,0)
-            //   }else if(pointer == "2"){
-            //       this.expenseLimit(sessionId)
-            //    }else if(pointer == "3"){
-            //       this.addExpense(sessionId)
+        }else if(pointer == "2"){
+            this.expenseLimit(sessionId)
+        }else if(pointer == "3"){
+            this.addExpense(sessionId)
         }else if(pointer == "4"){
             this.expensePage(sessionId,0)
         }else if(pointer == "5"){
             this.expensePage(sessionId,1)
-            //  }else if(pointer == "6"){
-            //      this.delete(sessionId)
+        }else if(pointer == "6"){
+            this.delete(sessionId)
         }else if(pointer == "7"){
             this.logout()
         }else{
@@ -324,7 +450,7 @@ class SLUP constructor(choice: String) {
         println("--                                                              --")
         println("--                                                              --")
         println("--                                                              --")
-        println("--           Hello Welcome to Plan Wise                         --")
+        println("--           Hello Welcome to Trackwise                         --")
         println("--       Your own financial planning partner                    --")
         println("--  Choose your favoured option from below:                     --")
         println("--         1  -   To sign Up (create a new profile)             --")
@@ -341,8 +467,7 @@ class SLUP constructor(choice: String) {
         var integer: Int = reader.nextInt()
         println("------------------------------------------------------------------")
         if (integer == 2) {
-            // val temp = this.logIn()
-            println("directs to login page")
+            val temp = this.logIn()
         } else if(integer == 1) {
             this.signUp()
         }
